@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NextMeet - 軽量・高機能Webミーティング。ブラウザだけで簡単にビデオ会議を開始できます。">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>NextMeet - 軽量・高機能Webミーティング</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0d0d14',
+                            800: '#1a1a2e',
+                            700: '#252540',
+                            600: '#2d2d4a',
+                            500: '#3d3d5c'
+                        },
+                        accent: {
+                            orange: '#f97316',
+                            blue: '#3b82f6',
+                            green: '#22c55e',
+                            red: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        .glass {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0d0d14 0%, #1a1a2e 50%, #252540 100%);
+        }
+        
+        .glow-orange {
+            box-shadow: 0 0 40px rgba(249, 115, 22, 0.3);
+        }
+        
+        .glow-blue {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white overflow-x-hidden">
+    <!-- Background Decorations -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-accent-orange/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-blue/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1.5s;"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 px-6 py-4">
+        <nav class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-orange to-orange-600 flex items-center justify-center glow-orange">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">NextMeet</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="#features" class="text-gray-400 hover:text-white transition-colors">機能</a>
+                <a href="#about" class="text-gray-400 hover:text-white transition-colors">概要</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="relative z-10 px-6 py-20">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-dark-700/50 border border-dark-500 mb-8">
+                    <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
+                    <span class="text-sm text-gray-400">ブラウザだけで完結 • インストール不要</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    <span class="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">軽量・高機能</span>
+                    <br>
+                    <span class="bg-gradient-to-r from-accent-orange to-orange-400 bg-clip-text text-transparent">Webミーティング</span>
+                </h1>
+                
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                    WebRTCによる高品質P2P通信。<br>
+                    ログイン不要、ワンクリックで即座にミーティング開始。
+                </p>
+            </div>
+
+            <!-- Action Cards -->
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+                <!-- Start Meeting Card -->
+                <div class="glass rounded-3xl p-8 border border-dark-500 hover:border-accent-orange/50 transition-all duration-300 group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-orange to-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform glow-orange">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-3">新しい会議を始める</h2>
+                    <p class="text-gray-400 mb-6">ワンクリックで自分専用のミーティングルームを作成。参加リンクを共有して招待できます。</p>
+                    <button id="startMeetingBtn" class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-accent-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] glow-orange">
+                        会議を始める
+                    </button>
+                </div>
+
+                <!-- Join Meeting Card -->
+                <div class="glass rounded-3xl p-8 border border-dark-500 hover:border-accent-blue/50 transition-all duration-300 group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-blue to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform glow-blue">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-3">会議に参加する</h2>
+                    <p class="text-gray-400 mb-6">ミーティングコードまたは参加リンクを入力して、既存の会議に参加できます。</p>
+                    <div class="flex gap-3">
+                        <input 
+                            type="text" 
+                            id="meetingCodeInput" 
+                            placeholder="ミーティングコードを入力"
+                            class="flex-1 py-4 px-5 rounded-xl bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:border-accent-blue input-glow transition-all"
+                        >
+                        <button id="joinMeetingBtn" class="py-4 px-6 rounded-xl bg-gradient-to-r from-accent-blue to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold transition-all duration-300 transform hover:scale-[1.02]">
+                            参加
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section id="features" class="relative z-10 px-6 py-24">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
+                <span class="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">主要機能</span>
+            </h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Feature Cards -->
+                <div class="glass rounded-2xl p-6 border border-dark-500 hover:border-dark-400 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-accent-green/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">画面共有</h3>
+                    <p class="text-gray-400 text-sm">画面、ウィンドウ、タブを高画質で共有</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-dark-500 hover:border-dark-400 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-accent-blue/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">テキストチャット</h3>
+                    <p class="text-gray-400 text-sm">通話中にメッセージ送信・ファイル共有</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-dark-500 hover:border-dark-400 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">AI議事録</h3>
+                    <p class="text-gray-400 text-sm">リアルタイム文字起こしと自動要約</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-dark-500 hover:border-dark-400 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-accent-orange/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">ホワイトボード</h3>
+                    <p class="text-gray-400 text-sm">画面上に直接描画・注釈を追加</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-dark-500 hover:border-dark-400 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-accent-red/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-accent-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">簡易録画</h3>
+                    <p class="text-gray-400 text-sm">ブラウザ上で録画、ローカル保存</p>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-dark-500 hover:border-dark-400 transition-colors">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">リアクション</h3>
+                    <p class="text-gray-400 text-sm">絵文字で素早くリアクション</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 px-6 py-8 border-t border-dark-600">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-orange to-orange-600 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <span class="font-semibold">NextMeet</span>
+            </div>
+            <p class="text-gray-500 text-sm">© 2026 NextMeet. Built with WebRTC & Vibecode.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    
+    <!-- PWA Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
