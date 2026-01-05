@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NextMeet - ミーティングルーム">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>NextMeet - ミーティング</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0d0d14',
+                            800: '#1a1a2e',
+                            700: '#252540',
+                            600: '#2d2d4a',
+                            500: '#3d3d5c'
+                        },
+                        accent: {
+                            orange: '#f97316',
+                            blue: '#3b82f6',
+                            green: '#22c55e',
+                            red: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #0d0d14;
+        }
+
+        .glass {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header
+        class="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4 bg-dark-800/80 backdrop-blur-lg border-b border-dark-600 z-30">
+        <!-- Left: Timer & Logo -->
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-orange to-orange-600 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <div id="callTimer" class="text-3xl font-light tracking-wide tabular-nums">0:00:00</div>
+        </div>
+
+        <!-- Center: Participants -->
+        <div class="flex items-center gap-3">
+            <div id="participantAvatars" class="flex -space-x-2">
+                <!-- Dynamic participant avatars -->
+            </div>
+            <span id="participantCount" class="text-gray-400 text-sm">0 participants</span>
+
+            <!-- Hand Raised Indicator -->
+            <div id="handRaisedIndicator"
+                class="hidden items-center gap-1 px-3 py-1 bg-yellow-500/20 rounded-full text-yellow-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium">2</span>
+            </div>
+        </div>
+
+        <!-- Right: Share Screen Button -->
+        <div class="flex items-center gap-4">
+            <button id="aiTranscriptionBtn"
+                class="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors"
+                title="AI議事録">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                </svg>
+                <span class="text-sm font-medium hidden md:inline">議事録</span>
+            </button>
+            <button id="shareScreenBtn"
+                class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent-orange to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all text-white font-medium">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                    </path>
+                </svg>
+                <span class="text-sm">Share Screen</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content: Video Grid -->
+    <main class="fixed top-[73px] left-0 right-0 bottom-[88px] overflow-hidden">
+        <div id="videoGrid" class="video-grid h-full p-4" data-count="1">
+            <!-- Local Video -->
+            <div class="video-tile" id="localVideoTile">
+                <video id="localVideo" autoplay muted playsinline
+                    class="w-full h-full object-cover transform scale-x-[-1]"></video>
+                <div class="participant-info">
+                    <svg class="w-4 h-4 text-accent-green" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
+                        <path
+                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z">
+                        </path>
+                    </svg>
+                    <span id="localUserName">あなた</span>
+                </div>
+                <div class="tile-actions">
+                    <button class="tile-action-btn" title="ピン留め">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                        </svg>
+                    </button>
+                    <button class="tile-action-btn" title="フルスクリーン">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Remote videos will be added dynamically -->
+        </div>
+
+        <!-- Whiteboard Overlay -->
+        <div id="whiteboardOverlay" class="whiteboard-overlay">
+            <canvas id="whiteboardCanvas"></canvas>
+        </div>
+
+        <!-- Whiteboard Tools -->
+        <div id="whiteboardTools" class="whiteboard-tools">
+            <button class="tile-action-btn active" data-tool="pen" title="ペン">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                    </path>
+                </svg>
+            </button>
+            <button class="tile-action-btn" data-tool="eraser" title="消しゴム">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                </svg>
+            </button>
+            <div class="flex gap-1 mt-2 pt-2 border-t border-dark-500">
+                <button class="w-6 h-6 rounded-full bg-white border-2 border-dark-500" data-color="#ffffff"></button>
+                <button class="w-6 h-6 rounded-full bg-accent-red" data-color="#ef4444"></button>
+                <button class="w-6 h-6 rounded-full bg-accent-blue" data-color="#3b82f6"></button>
+                <button class="w-6 h-6 rounded-full bg-accent-green" data-color="#22c55e"></button>
+            </div>
+            <button class="tile-action-btn mt-2" id="clearWhiteboard" title="クリア">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- Recording Indicator -->
+    <div id="recordingIndicator" class="recording-indicator">
+        <div class="recording-dot"></div>
+        <span>REC</span>
+        <span id="recordingTime">0:00</span>
+    </div>
+
+    <!-- Transcription Panel -->
+    <div id="transcriptionPanel" class="transcription-panel">
+        <div class="transcription-header">
+            <h3 class="font-semibold flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                </svg>
+                AI議事録
+            </h3>
+            <div class="flex items-center gap-2">
+                <button id="downloadTranscript" class="tile-action-btn" title="ダウンロード">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                </button>
+                <button id="closeTranscript" class="tile-action-btn" title="閉じる">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="transcriptionContent" class="transcription-content">
+            <p class="text-gray-400 text-sm">音声認識を開始するには「議事録」ボタンをクリックしてください。</p>
+        </div>
+    </div>
+
+    <!-- Control Bar -->
+    <footer class="control-bar fixed bottom-0 left-0 right-0 z-30">
+        <!-- Left: Meeting Code -->
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-4 py-2 bg-dark-700 rounded-xl">
+                <span class="text-sm text-gray-400">Meeting Code:</span>
+                <span id="meetingCode" class="font-mono font-semibold text-accent-orange">NEXT-XXXX-XXXX</span>
+            </div>
+            <button id="copyLinkBtn"
+                class="flex items-center gap-2 px-4 py-2 bg-dark-600 hover:bg-dark-500 rounded-xl transition-colors text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
+                    </path>
+                </svg>
+                Copy Link
+            </button>
+            <button id="settingsBtn" class="tile-action-btn" title="設定">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Center: Main Controls -->
+        <div class="flex items-center gap-4">
+            <button id="micBtn" class="control-btn secondary" title="マイク">
+                <svg id="micOnIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                    </path>
+                </svg>
+                <svg id="micOffIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                        clip-rule="evenodd"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+                </svg>
+            </button>
+
+            <button id="cameraBtn" class="control-btn secondary" title="カメラ">
+                <svg id="cameraOnIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                    </path>
+                </svg>
+                <svg id="cameraOffIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"></path>
+                </svg>
+            </button>
+
+            <button id="leaveBtn" class="control-btn danger" title="退出">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Right: Additional Controls -->
+        <div class="flex items-center gap-3">
+            <button id="chatBtn" class="control-btn secondary relative" title="チャット">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                    </path>
+                </svg>
+                <span id="chatBadge"
+                    class="absolute -top-1 -right-1 w-5 h-5 bg-accent-red rounded-full text-xs font-bold flex items-center justify-center hidden">0</span>
+            </button>
+
+            <button id="handRaiseBtn" class="control-btn secondary" title="挙手">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11">
+                    </path>
+                </svg>
+            </button>
+
+            <div class="relative">
+                <button id="reactionBtn" class="control-btn secondary" title="リアクション">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                </button>
+                <div id="reactionPicker" class="reaction-picker">
+                    <button class="reaction-btn" data-reaction="👍">👍</button>
+                    <button class="reaction-btn" data-reaction="👏">👏</button>
+                    <button class="reaction-btn" data-reaction="❤️">❤️</button>
+                    <button class="reaction-btn" data-reaction="😂">😂</button>
+                    <button class="reaction-btn" data-reaction="🎉">🎉</button>
+                    <button class="reaction-btn" data-reaction="🤔">🤔</button>
+                </div>
+            </div>
+
+            <button id="whiteboardBtn" class="control-btn secondary" title="ホワイトボード">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                    </path>
+                </svg>
+            </button>
+
+            <button id="recordBtn" class="control-btn secondary" title="録画">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
+                    <circle id="recordDot" cx="12" cy="12" r="4" fill="currentColor"></circle>
+                </svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="settings-panel">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <svg class="w-6 h-6 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Meeting Settings
+            </h2>
+            <button id="closeSettingsBtn" class="tile-action-btn">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Audio Settings -->
+        <div class="settings-group">
+            <h3>オーディオ</h3>
+            <div class="setting-item">
+                <span class="setting-label">Noise Suppression</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="noiseSuppressionToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Echo Cancellation</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="echoCancellationToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Call Audio Quality</span>
+                <select id="audioQualitySelect" class="select-dropdown">
+                    <option value="high">High Fidelity</option>
+                    <option value="voice" selected>Voice Optimized</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Video Settings -->
+        <div class="settings-group">
+            <h3>ビデオ</h3>
+            <div class="setting-item">
+                <span class="setting-label">Resolution</span>
+                <select id="resolutionSelect" class="select-dropdown">
+                    <option value="1080">1080p</option>
+                    <option value="720" selected>720p</option>
+                    <option value="480">480p</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Frame Rate</span>
+                <select id="frameRateSelect" class="select-dropdown">
+                    <option value="60">60fps</option>
+                    <option value="30" selected>30fps</option>
+                    <option value="15">15fps</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Screen Share Settings -->
+        <div class="settings-group">
+            <h3>画面共有</h3>
+            <div class="setting-item">
+                <span class="setting-label">Screen Share Quality</span>
+                <div class="flex gap-2">
+                    <button id="screenQualityHigh"
+                        class="px-4 py-2 rounded-lg bg-dark-600 hover:bg-dark-500 text-sm">High</button>
+                    <button id="screenQualityStandard"
+                        class="px-4 py-2 rounded-lg bg-accent-orange text-white text-sm">Standard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Settings -->
+        <div class="settings-group">
+            <h3>その他</h3>
+            <div class="setting-item">
+                <span class="setting-label">Whiteboard Overlay</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="whiteboardToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Record Call</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="recordToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Focus Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="focusModeToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="chatPanel" class="chat-panel">
+        <div class="chat-header">
+            <h2 class="text-lg font-bold flex items-center gap-2">
+                <svg class="w-5 h-5 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                    </path>
+                </svg>
+                チャット
+            </h2>
+            <button id="closeChatBtn" class="tile-action-btn">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <!-- Messages will be added dynamically -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="メッセージを入力...">
+            <button id="sendChatBtn" class="control-btn primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-4 border-t border-dark-600">
+            <label
+                class="flex items-center gap-3 p-3 bg-dark-700 rounded-xl cursor-pointer hover:bg-dark-600 transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
+                    </path>
+                </svg>
+                <span class="text-sm text-gray-400">ファイルを添付</span>
+                <input type="file" id="fileInput" class="hidden" multiple>
+            </label>
+        </div>
+    </div>
+
+    <!-- Leave Confirmation Modal -->
+    <div id="leaveModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="glass rounded-2xl p-8 max-w-md mx-4 border border-dark-500">
+            <h3 class="text-xl font-bold mb-4">ミーティングを終了しますか？</h3>
+            <p class="text-gray-400 mb-6">ミーティングから退出すると、再度参加するにはミーティングコードが必要です。</p>
+            <div class="flex gap-4">
+                <button id="cancelLeaveBtn"
+                    class="flex-1 py-3 px-6 rounded-xl bg-dark-600 hover:bg-dark-500 transition-colors font-medium">キャンセル</button>
+                <button id="confirmLeaveBtn"
+                    class="flex-1 py-3 px-6 rounded-xl bg-accent-red hover:bg-red-600 transition-colors font-medium">退出する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/media.js"></script>
+    <script src="js/rtc.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/transcription.js"></script>
+    <script src="js/whiteboard.js"></script>
+    <script src="js/recording.js"></script>
+</body>
+
+</html>
